@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  # Portainer - WebUI for Containers
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:2.0.0
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "$PORTAINER_PORT:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $DOCKER_DIR/portainer:/data portainer/portainer
+    environment:
+      - TZ=$TZ

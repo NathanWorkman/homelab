@@ -2,6 +2,159 @@
     "version": "2",
     "templates": [
         {
+            "categories": [
+                "Other"
+            ],
+            "description": "AdGuard is the best way to get rid of intrusive ads and online tracking, and to protect your computer from malware",
+            "env": [
+                {
+                    "default": "1000",
+                    "label": "PUID",
+                    "name": "PUID"
+                },
+                {
+                    "default": "100",
+                    "label": "PGID",
+                    "name": "PGID"
+                },
+                {
+                    "label": "CONTEXT_PATH",
+                    "name": "CONTEXT_PATH",
+                    "set": "adguard home"
+                }
+            ],
+            "image": "adguard/adguardhome:latest",
+            "logo": "https://raw.githubusercontent.com/NathanWorkman/homelab/master/logos/adguard.png",
+            "name": "adguard",
+            "platform": "linux",
+            "ports": [
+                "53:53/tcp",
+                "53:53/udp",
+                "67:67/udp",
+                "68:68/tcp",
+                "68:68/udp",
+                "80:80/tcp",
+                "443:443/tcp",
+                "853:853/tcp",
+                "3000:3000/tcp"
+            ],
+            "restart_policy": "unless-stopped",
+            "title": "Adguard",
+            "type": 1,
+            "volumes": [
+                {
+                    "bind": "/portainer/Files/AppData/Adguard/Workdir",
+                    "container": "/opt/adguardhome/work"
+                },
+                {
+                    "bind": "/portainer/Files/AppData/Adguard/Conf",
+                    "container": "/opt/adguardhome/conf"
+                }
+            ]
+        },
+        {
+            "categories": [
+                "Backup"
+            ],
+            "description": "Free backup software to store encrypted backups online for Windows, macOS and Linux.",
+            "env": [
+                {
+                    "default": "1000",
+                    "label": "PUID",
+                    "name": "PUID"
+                },
+                {
+                    "default": "100",
+                    "label": "PGID",
+                    "name": "PGID"
+                }
+            ],
+            "image": "linuxserver/duplicati:latest",
+            "logo": "https://raw.githubusercontent.com/NathanWorkman/homelab/master/logos/duplicati.png",
+            "name": "duplicati",
+            "platform": "linux",
+            "ports": [
+                "8200:8200/tcp"
+            ],
+            "restart_policy": "unless-stopped",
+            "title": "Duplicati",
+            "type": 1,
+            "volumes": [
+                {
+                    "bind": "/portainer/Files/AppData/Config/Duplicati",
+                    "container": "/config"
+                },
+                {
+                    "container": "/tmp"
+                },
+                {
+                    "container": "/backups"
+                },
+                {
+                    "container": "/source"
+                }
+            ]
+        },
+        {
+            "type": 1,
+            "title": "ELK Stack",
+            "description": "Elasticsearch, Logstash, Kibana Stack",
+            "logo": "https://raw.githubusercontent.com/NathanWorkman/homelab/master/logos/elk.png",
+            "platform": "linux",
+            "restart_policy": "unless-stopped",
+            "categories": [
+                "logging"
+            ],
+            "image": "sebp/elk:latest",
+            "env": [
+                {
+                    "name": "CLUSTER_NAME",
+                    "label": "Cluster Name"
+                },
+                {
+                    "name": "ES_CONNECT_RETRY",
+                    "label": "Kibana to Elasticsearch Connect Retry (seconds)",
+                    "default": "90"
+                },
+                {
+                    "name": "ES_HEAP_SIZE",
+                    "label": "Elasticsearch Heap Size (256M to 1G)"
+                },
+                {
+                    "name": "LS_HEAP_SIZE",
+                    "label": "Logstash Heap Size (Default 500M)"
+                },
+                {
+                    "name": "TZ",
+                    "label": "Timezone (i.e. 'America/Los Angeles')"
+                }
+            ],
+            "ports": [
+                "514/udp",
+                "5044/tcp",
+                "5601/tcp",
+                "6514/tcp",
+                "9200/tcp",
+                "9300/tcp",
+                "9600/tcp"
+            ],
+            "network": "bridge",
+            "volumes": [
+                {
+                    "container": "/etc/localtime:ro"
+                },
+                {
+                    "container": "/etc/logstash/conf.d/90-gnas-logs.conf"
+                },
+                {
+                    "container": "/var/lib/elasticsearch"
+                },
+                {
+                    "container": "/var/log"
+                }
+            ]
+        },
+        {
             "type": 1,
             "title": "Fleet",
             "description": "Fleet provides an online web interface which displays a set of maintained images from one or more owned repositories.",
@@ -13,25 +166,6 @@
             "image": "linuxserver/fleet:latest",
             "ports": [
                 "5000/tcp"
-            ],
-            "volumes": [
-                {
-                    "container": "/config"
-                }
-            ]
-        },
-        {
-            "type": 1,
-            "title": "Rdesktop",
-            "description": "Ubuntu based containers containing full desktop environments in officially supported flavors accessible via RDP.",
-            "categories": [
-                "docker"
-            ],
-            "platform": "linux",
-            "logo": "https://github.com/NathanWorkman/necronomicon/blob/master/rdesktop/rdesktop.png",
-            "image": "linuxserver/rdesktop:latest",
-            "ports": [
-                "3389/tcp"
             ],
             "volumes": [
                 {
@@ -401,112 +535,6 @@
         },
         {
             "type": 1,
-            "title": "SQL Server",
-            "description": "Microsoft SQL Server Developer for Windows containers",
-            "categories": [
-                "database"
-            ],
-            "platform": "windows",
-            "note": "Password needs to include at least 8 characters including uppercase, lowercase letters, base-10 digits and/or non-alphanumeric symbols.",
-            "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/microsoft.png",
-            "image": "microsoft/mssql-server-windows-developer:latest",
-            "ports": [
-                "1433/tcp"
-            ],
-            "env": [
-                {
-                    "name": "ACCEPT_EULA",
-                    "set": "Y"
-                },
-                {
-                    "name": "sa_password",
-                    "label": "SA password"
-                }
-            ],
-            "volumes": [
-                {
-                    "container": "C:/temp/"
-                }
-            ]
-        },
-        {
-            "type": 1,
-            "title": "SQL Server Express",
-            "description": "Microsoft SQL Server Express for Windows containers",
-            "categories": [
-                "database"
-            ],
-            "platform": "windows",
-            "note": "Password needs to include at least 8 characters including uppercase, lowercase letters, base-10 digits and/or non-alphanumeric symbols.",
-            "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/microsoft.png",
-            "image": "microsoft/mssql-server-windows-express:latest",
-            "ports": [
-                "1433/tcp"
-            ],
-            "env": [
-                {
-                    "name": "ACCEPT_EULA",
-                    "set": "Y"
-                },
-                {
-                    "name": "sa_password",
-                    "label": "SA password"
-                }
-            ],
-            "volumes": [
-                {
-                    "container": "C:/temp/"
-                }
-            ]
-        },
-        {
-            "type": 1,
-            "title": "IronFunctions API",
-            "description": "Open-source serverless computing platform",
-            "categories": [
-                "serverless"
-            ],
-            "platform": "linux",
-            "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/ironfunctions.png",
-            "image": "iron/functions:latest",
-            "ports": [
-                "8080/tcp"
-            ],
-            "volumes": [
-                {
-                    "container": "/app/data"
-                }
-            ],
-            "privileged": true
-        },
-        {
-            "type": 1,
-            "title": "IronFunctions UI",
-            "description": "Open-source user interface for IronFunctions",
-            "categories": [
-                "serverless"
-            ],
-            "platform": "linux",
-            "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/ironfunctions.png",
-            "image": "iron/functions-ui:latest",
-            "ports": [
-                "4000/tcp"
-            ],
-            "volumes": [
-                {
-                    "container": "/app/data"
-                }
-            ],
-            "env": [
-                {
-                    "name": "API_URL",
-                    "label": "API URL"
-                }
-            ],
-            "privileged": true
-        },
-        {
-            "type": 1,
             "title": "Solr",
             "description": "Open-source enterprise search platform",
             "categories": [
@@ -605,55 +633,6 @@
         },
         {
             "type": 1,
-            "title": "Joomla",
-            "description": "Another free and open-source CMS",
-            "categories": [
-                "CMS"
-            ],
-            "platform": "linux",
-            "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/joomla.png",
-            "image": "joomla:latest",
-            "env": [
-                {
-                    "name": "JOOMLA_DB_HOST",
-                    "label": "MySQL database host",
-                    "type": "container"
-                },
-                {
-                    "name": "JOOMLA_DB_PASSWORD",
-                    "label": "Database password"
-                }
-            ],
-            "ports": [
-                "80/tcp"
-            ],
-            "volumes": [
-                {
-                    "container": "/var/www/html"
-                }
-            ]
-        },
-        {
-            "type": 1,
-            "title": "Drupal",
-            "description": "Open-source content management framework",
-            "categories": [
-                "CMS"
-            ],
-            "platform": "linux",
-            "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/drupal.png",
-            "image": "drupal:latest",
-            "ports": [
-                "80/tcp"
-            ],
-            "volumes": [
-                {
-                    "container": "/var/www/html"
-                }
-            ]
-        },
-        {
-            "type": 1,
             "title": "Plone",
             "description": "A free and open-source CMS built on top of Zope",
             "categories": [
@@ -668,27 +647,6 @@
             "volumes": [
                 {
                     "container": "/data"
-                }
-            ]
-        },
-        {
-            "type": 1,
-            "title": "Magento 2",
-            "description": "Open-source e-commerce platform",
-            "categories": [
-                "CMS"
-            ],
-            "platform": "linux",
-            "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/magento.png",
-            "image": "alankent/gsd:latest",
-            "ports": [
-                "80/tcp",
-                "3000/tcp",
-                "3001/tcp"
-            ],
-            "volumes": [
-                {
-                    "container": "/var/www/html/"
                 }
             ]
         },
@@ -783,65 +741,6 @@
             "volumes": [
                 {
                     "container": "/var/www/html"
-                }
-            ]
-        },
-        {
-            "type": 1,
-            "title": "Wowza",
-            "description": "Streaming media server",
-            "categories": [
-                "streaming"
-            ],
-            "platform": "linux",
-            "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/wowza.png",
-            "image": "sameersbn/wowza:4.1.2-8",
-            "env": [
-                {
-                    "name": "WOWZA_ACCEPT_LICENSE",
-                    "label": "Agree to Wowza EULA",
-                    "set": "yes"
-                },
-                {
-                    "name": "WOWZA_KEY",
-                    "label": "License key"
-                }
-            ],
-            "ports": [
-                "1935/tcp",
-                "8086/tcp",
-                "8087/tcp",
-                "8088/tcp"
-            ],
-            "volumes": [
-                {
-                    "container": "/var/lib/wowza"
-                }
-            ]
-        },
-        {
-            "type": 1,
-            "title": "Jenkins",
-            "description": "Open-source continuous integration tool",
-            "categories": [
-                "continuous-integration"
-            ],
-            "platform": "linux",
-            "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/jenkins.png",
-            "image": "jenkins/jenkins:lts",
-            "ports": [
-                "8080/tcp",
-                "50000/tcp"
-            ],
-            "env": [
-                {
-                    "name": "JENKINS_OPTS",
-                    "label": "Jenkins options"
-                }
-            ],
-            "volumes": [
-                {
-                    "container": "/var/jenkins_home"
                 }
             ]
         },
@@ -1040,21 +939,6 @@
         },
         {
             "type": 2,
-            "title": "IronFunctions",
-            "description": "Open-source serverless computing platform",
-            "note": "Deploys the IronFunctions API and UI.",
-            "categories": [
-                "serverless"
-            ],
-            "platform": "linux",
-            "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/ironfunctions.png",
-            "repository": {
-                "url": "https://github.com/portainer/templates",
-                "stackfile": "stacks/ironfunctions/docker-stack.yml"
-            }
-        },
-        {
-            "type": 2,
             "title": "CockroachDB",
             "description": "CockroachDB cluster",
             "note": "Deploys an insecure CockroachDB cluster, please refer to <a href=\"https://www.cockroachlabs.com/docs/stable/orchestrate-cockroachdb-with-docker-swarm.html\" target=\"_blank\">CockroachDB documentation</a> for production deployments.",
@@ -1089,113 +973,6 @@
                     "description": "Password used by the MySQL root user."
                 }
             ]
-        },
-        {
-            "type": 3,
-            "title": "Wordpress",
-            "description": "Wordpress setup with a MySQL database",
-            "note": "Deploys a Wordpress instance connected to a MySQL database.",
-            "categories": [
-                "CMS"
-            ],
-            "platform": "linux",
-            "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/wordpress.png",
-            "repository": {
-                "url": "https://github.com/portainer/templates",
-                "stackfile": "stacks/wordpress/docker-compose.yml"
-            },
-            "env": [
-                {
-                    "name": "MYSQL_DATABASE_PASSWORD",
-                    "label": "Database root password",
-                    "description": "Password used by the MySQL root user."
-                }
-            ]
-        },
-        {
-            "type": 2,
-            "title": "Microsoft OMS Agent",
-            "description": "Microsoft Operations Management Suite Linux agent.",
-            "categories": [
-                "OPS"
-            ],
-            "platform": "linux",
-            "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/microsoft.png",
-            "repository": {
-                "url": "https://github.com/portainer/templates",
-                "stackfile": "stacks/microsoft-oms/docker-stack.yml"
-            },
-            "env": [
-                {
-                    "name": "AZURE_WORKSPACE_ID",
-                    "label": "Workspace ID",
-                    "description": "Azure Workspace ID"
-                },
-                {
-                    "name": "AZURE_PRIMARY_KEY",
-                    "label": "Primary key",
-                    "description": "Azure primary key"
-                }
-            ]
-        },
-        {
-            "title": "Sematext Docker Agent",
-            "type": 2,
-            "categories": [
-                "Log Management",
-                "Monitoring"
-            ],
-            "description": "Collect logs, metrics and docker events",
-            "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/sematext_agent.png",
-            "platform": "linux",
-            "repository": {
-                "url": "https://github.com/portainer/templates",
-                "stackfile": "stacks/sematext-agent-docker/docker-stack.yml"
-            },
-            "env": [
-                {
-                    "name": "LOGSENE_TOKEN",
-                    "label": "Logs token"
-                },
-                {
-                    "name": "SPM_TOKEN",
-                    "label": "SPM monitoring token"
-                }
-            ]
-        },
-        {
-            "title": "Datadog agent",
-            "type": 2,
-            "categories": [
-                "Monitoring"
-            ],
-            "description": "Collect events and metrics",
-            "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/datadog_agent.png",
-            "platform": "linux",
-            "repository": {
-                "url": "https://github.com/portainer/templates",
-                "stackfile": "stacks/datadog-agent/docker-stack.yml"
-            },
-            "env": [
-                {
-                    "name": "API_KEY",
-                    "label": "Datadog API key"
-                }
-            ]
-        },
-        {
-            "type": 4,
-            "title": "Wordpress",
-            "description": "Wordpress setup with a MySQL database",
-            "note": "Deploys a Wordpress instance connected to a MySQL database.",
-            "stackfile": "https://raw.githubusercontent.com/portainer/templates/master/stacks/wordpress/edge/docker-stack.yml"
-        },
-        {
-            "type": 4,
-            "title": "CockroachDB",
-            "description": "CockroachDB cluster",
-            "note": "Deploys an insecure CockroachDB cluster, please refer to <a href=\"https://www.cockroachlabs.com/docs/stable/orchestrate-cockroachdb-with-docker-swarm.html\" target=\"_blank\">CockroachDB documentation</a> for production deployments.",
-            "stackfile": "https://raw.githubusercontent.com/portainer/templates/master/stacks/cockroachdb/edge/docker-stack.yml"
         }
     ]
 }
